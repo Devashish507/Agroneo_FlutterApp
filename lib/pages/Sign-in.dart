@@ -1,4 +1,3 @@
-
 import 'package:agri/pages/Sign-up.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -11,11 +10,12 @@ class SignInPage extends StatefulWidget {
   State<SignInPage> createState() => _SignInPageState();
 }
 
-class _SignInPageState extends State<SignInPage> with SingleTickerProviderStateMixin {
+class _SignInPageState extends State<SignInPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  
+
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -47,20 +47,34 @@ class _SignInPageState extends State<SignInPage> with SingleTickerProviderStateM
     super.dispose();
   }
 
-  Future<void> sigin() async {
-    try{
-    final cred =
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: _emailController.text.trim(), 
-      password: _passwordController.text.trim()
+  bool isLoading = false;
+
+  Future<void> signIn() async {
+    setState(() {
+      isLoading = true; // Start loading indicator
+    });
+
+    try {
+      final cred = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-      if (cred.user != null){
+
+      if (cred.user != null) {
         await Future.delayed(const Duration(milliseconds: 500));
+
         // ignore: use_build_context_synchronously
-        Navigator.pushReplacementNamed(context,"/home");
+        Navigator.pushReplacementNamed(context, "/home");
       }
-    } catch(e){
+    } catch (e) {
       print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // Stop loading indicator
+      });
     }
   }
 
@@ -130,7 +144,7 @@ class _SignInPageState extends State<SignInPage> with SingleTickerProviderStateM
                   _AnimatedButton(
                     text: 'SIGN IN',
                     onTap: () async {
-                      await sigin();
+                      await signIn();
                     },
                   ),
                   const SizedBox(height: 24),
@@ -139,7 +153,8 @@ class _SignInPageState extends State<SignInPage> with SingleTickerProviderStateM
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => const SignUpPage()),
+                          MaterialPageRoute(
+                              builder: (context) => const SignUpPage()),
                         );
                       },
                       child: RichText(

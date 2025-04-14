@@ -12,7 +12,8 @@ class SignUpPage extends StatefulWidget {
   State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateMixin {
+class _SignUpPageState extends State<SignUpPage>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -47,22 +48,36 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
     _passwordController.dispose();
     super.dispose();
   }
-  
-  Future<void> createaccwithpass() async{
-    try{
-      final usercred =
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text.trim()
+
+  bool isLoading = false;
+
+  Future<void> createAccWithPass() async {
+    setState(() {
+      isLoading = true; // Show loading indicator
+    });
+
+    try {
+      final userCred =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
       );
-      print(usercred);
-      if (usercred.user != null){
+
+      if (userCred.user != null) {
         await Future.delayed(const Duration(milliseconds: 500));
+
         // ignore: use_build_context_synchronously
-        Navigator.pushReplacementNamed(context,"/profile");
+        Navigator.pushReplacementNamed(context, "/profile");
       }
-    }catch (e){
+    } catch (e) {
       print(e);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false; // Hide loading indicator
+      });
     }
   }
 
@@ -120,8 +135,8 @@ class _SignUpPageState extends State<SignUpPage> with SingleTickerProviderStateM
                   const SizedBox(height: 32),
                   _AnimatedButton(
                     text: 'SIGN UP',
-                    onTap: () async{
-                      await createaccwithpass();
+                    onTap: () async {
+                      await createAccWithPass();
                     },
                   ),
                   const SizedBox(height: 24),

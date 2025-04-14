@@ -23,7 +23,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // Initialize Gemini API
     _model = GenerativeModel(
       model: 'gemini-pro',
-      apiKey: 'AIzaSyBuUJavBHVKdCPiYARzABPawHOOT-5QdOo', // Replace with your actual API key
+      apiKey: 'AIzaSyCmfRO0AxZxI7_TcbiLzWK6rysfn6eb7Q0', // Replace with your actual API key
     );
     
     // Add welcome message

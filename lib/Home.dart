@@ -173,7 +173,7 @@ class _HomeScreenState extends State<HomeScreen> {
             'Chat-Bot', Icons.chat_bubble, Icons.smart_toy, contextt, '/chat-bot'),
         _buildMenuItem(
             'Schemes', Icons.account_balance, Icons.policy, contextt, '/schemes'),
-        _buildMenuItem('Community', Icons.people, Icons.forum, contextt, '/community'),
+        _buildMenuItem('Forcast', Icons.sunny, Icons.cloud, contextt, '/forcast'),
       ],
     );
   }

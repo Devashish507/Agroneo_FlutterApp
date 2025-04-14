@@ -6,7 +6,9 @@ import 'package:agri/pages/chatpage.dart';
 import 'package:agri/pages/market2.dart';
 import 'package:agri/pages/profile.dart';
 import 'package:agri/pages/profile2.dart';
+import 'package:agri/pages/schemes.dart';
 import 'package:agri/pages/splash.dart';
+import 'package:agri/pages/wheater.dart';
 import 'package:flutter/material.dart';
 
 Route<dynamic>? onGenerateRoute(RouteSettings settings) {
@@ -28,7 +30,11 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
     case '/market2':
       return MaterialPageRoute(builder: (_)=> MarketPlacePage());
     case '/chat-bot':
-      return MaterialPageRoute(builder: (_)=> ChatScreen());      
+      return MaterialPageRoute(builder: (_)=> ChatScreen());   
+    case '/schemes':
+      return MaterialPageRoute(builder: (_)=> SchemesPage());  
+    case '/forcast':
+      return MaterialPageRoute(builder: (_)=> WeatherPage());     
     default:
       return MaterialPageRoute(
         builder: (_) => const Scaffold(
