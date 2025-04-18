@@ -25,9 +25,9 @@ Route<dynamic>? onGenerateRoute(RouteSettings settings) {
       return MaterialPageRoute(builder: (_) => ProfilePage());
     case "/profile2":
       return MaterialPageRoute(builder: (_) => ProfilePagee());
-    case '/market':
-      return MaterialPageRoute(builder: (_)=> MarketRatePage()); 
     case '/market2':
+      return MaterialPageRoute(builder: (_)=> MarketPlacePagee()); 
+    case '/market':
       return MaterialPageRoute(builder: (_)=> MarketPlacePage());
     case '/chat-bot':
       return MaterialPageRoute(builder: (_)=> ChatScreen());   

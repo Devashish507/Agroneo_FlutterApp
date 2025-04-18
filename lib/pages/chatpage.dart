@@ -22,9 +22,11 @@ class _ChatScreenState extends State<ChatScreen> {
     super.initState();
     // Initialize Gemini API
     _model = GenerativeModel(
-      model: 'gemini-pro',
-      apiKey: 'AIzaSyCmfRO0AxZxI7_TcbiLzWK6rysfn6eb7Q0', // Replace with your actual API key
+      model: 'gemini-2.0-flash',
+      apiKey: 'AIzaSyCQkJQ5iKy47My7soMdHkQ4xEnqvzgmSJ4', // Replace with your actual API key
     );
+
+    
     
     // Add welcome message
     _messages.add(
@@ -66,6 +68,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
+      print("In try😀");
       final prompt = '''
 You are an agriculture expert chatbot specialized in providing farming advice, crop information, and agricultural best practices.
 
@@ -83,6 +86,8 @@ User query: $text
 
       final content = [Content.text(prompt)];
       final response = await _model.generateContent(content);
+      print("😀😀😀😀");
+      print(response);
       final responseText = response.text ?? 'Sorry, I couldn\'t process your request. Please try again.';
 
       setState(() {
@@ -91,19 +96,23 @@ User query: $text
       });
 
       _scrollToBottom();
-    } catch (e) {
-      setState(() {
-        _messages.add(
-          Message(
-            text: "Sorry, I couldn't process your request. Please try again. क्षमा करें, मैं आपके अनुरोध को संसाधित नहीं कर सका। कृपया पुनः प्रयास करें।",
-            isUser: false,
-          ),
-        );
-        _isLoading = false;
-      });
-      _scrollToBottom();
-    }
+    } catch (e, stackTrace) {
+  print('❌ Gemini API error: $e');
+  print('🔍 Stack trace: $stackTrace');
+  setState(() {
+    _messages.add(
+      Message(
+        text: "Sorry, I couldn't process your request. Please try again. क्षमा करें, मैं आपके अनुरोध को संसाधित नहीं कर सका। कृपया पुनः प्रयास करें।",
+        isUser: false,
+      ),
+    );
+    _isLoading = false;
+  });
+  _scrollToBottom();
+}
+
   }
+  
 
   @override
   Widget build(BuildContext context) {

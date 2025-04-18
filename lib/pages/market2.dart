@@ -3,7 +3,6 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
-
 class MarketPlacePage extends StatefulWidget {
   const MarketPlacePage({super.key});
   static String routeNameM = "/market2";
@@ -31,20 +30,31 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
     });
 
     try {
-      // Replace with your actual API endpoint
       final response = await http.get(
-        //Uri.parse('https://your-api-endpoint.com/crops?location=$selectedLocation'),
-        Uri.parse('https://apigenerator.dronahq.com/api/w6fCON7j/test1'),
+        Uri.parse('http://192.168.48.134:5000/api/crops?location=$selectedLocation'),
       ).timeout(const Duration(seconds: 10));
 
+
       if (response.statusCode == 200) {
-        final Map<String, dynamic> decodedData = jsonDecode(response.body)[0];
-        
-        if (decodedData['status'] == 'success') {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        if (decodedData['success'] == true) {
           final List<dynamic> cropsData = decodedData['data'];
-          
+          print("😀😀😀😀😀😀😀😀😀");
+          print(cropsData);
+          final today = DateTime.now();
+          final filteredData = cropsData.where((item) {
+            final itemDate = DateTime.tryParse(item['date'] ?? '');
+            return itemDate != null &&
+                itemDate.year == today.year &&
+                itemDate.month == today.month &&
+                itemDate.day == today.day;
+          }).toList();
+          print(filteredData);
+
           setState(() {
-            cropDataList = cropsData.map((item) => CropData.fromJson(item)).toList();
+            cropDataList = filteredData.map((item) => CropData.fromJson(item)).toList();
+            print("😀😀😀😀😀😀😀😀😀😀😀");
+            print(cropDataList);
             isLoading = false;
           });
         } else {
@@ -82,7 +92,6 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              // Market Place Header
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 16),
@@ -101,14 +110,9 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                   ),
                 ),
               ),
-              
               const SizedBox(height: 16),
-              
-              // Search Bar
               GestureDetector(
-                onTap: () {
-                  _showLocationPicker(context);
-                },
+                onTap: () => _showLocationPicker(context),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
@@ -117,11 +121,7 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(
-                        Icons.search,
-                        color: Colors.white,
-                        size: 28,
-                      ),
+                      const Icon(Icons.search, color: Colors.white, size: 28),
                       const SizedBox(width: 16),
                       Text(
                         selectedLocation,
@@ -136,10 +136,7 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                   ),
                 ),
               ),
-              
               const SizedBox(height: 16),
-              
-              // Error message
               if (errorMessage.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(16),
@@ -167,9 +164,7 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                     ],
                   ),
                 ),
-              
-              // Chart
-              if (!isLoading && cropDataList.isNotEmpty && errorMessage.isEmpty) 
+              if (!isLoading && cropDataList.isNotEmpty && errorMessage.isEmpty)
                 Container(
                   height: 200,
                   padding: const EdgeInsets.all(16),
@@ -183,15 +178,10 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                     children: [
                       const Text(
                         'Price Comparison',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 8),
-                      Expanded(
-                        child: CropBarChart(cropDataList: cropDataList),
-                      ),
+                      Expanded(child: CropBarChart(cropDataList: cropDataList)),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -206,24 +196,18 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
                     ],
                   ),
                 ),
-              
-              // Crop Cards
               Expanded(
                 child: isLoading
-                    ? const Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                            SizedBox(height: 16),
-                            Text('Fetching crop data...'),
-                          ],
-                        ),
-                      )
+                    ? const Center(child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Fetching crop data...'),
+                        ],
+                      ))
                     : errorMessage.isEmpty && cropDataList.isEmpty
-                        ? const Center(
-                            child: Text('No crop data available for this location'),
-                          )
+                        ? const Center(child: Text('No crop data available for today'))
                         : ListView.builder(
                             itemCount: cropDataList.length,
                             itemBuilder: (context, index) {
@@ -249,16 +233,10 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
         Container(
           width: 12,
           height: 12,
-          decoration: BoxDecoration(
-            color: color,
-            borderRadius: BorderRadius.circular(2),
-          ),
+          decoration: BoxDecoration(color: color, borderRadius: BorderRadius.circular(2)),
         ),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(fontSize: 12),
-        ),
+        Text(label, style: const TextStyle(fontSize: 12)),
       ],
     );
   }
@@ -275,24 +253,13 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
-                'Select Location',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              const Text('Select Location', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
               const SizedBox(height: 16),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
                 children: [
-                  'Akola',
-                  'Nagpur',
-                  'Amravati',
-                  'Wardha',
-                  'Yavatmal',
-                  'Buldhana',
+                  'Akola', 'Nagpur', 'Amravati', 'Wardha', 'Yavatmal', 'Buldhana'
                 ].map((location) => _buildLocationChip(location)).toList(),
               ),
             ],
@@ -304,7 +271,6 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
 
   Widget _buildLocationChip(String location) {
     final isSelected = location == selectedLocation;
-    
     return GestureDetector(
       onTap: () {
         Navigator.pop(context);
@@ -327,7 +293,7 @@ class _MarketPlacePageState extends State<MarketPlacePage> {
 class CropCard extends StatelessWidget {
   final CropData cropData;
 
-  const CropCard({Key? key, required this.cropData}) : super(key: key);
+  const CropCard({super.key, required this.cropData});
 
   @override
   Widget build(BuildContext context) {
@@ -343,20 +309,8 @@ class CropCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                cropData.crop,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Text(
-                cropData.cropEng,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              Text(cropData.crop, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(cropData.cropEng, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 16),
@@ -376,21 +330,9 @@ class CropCard extends StatelessWidget {
   Widget _buildPriceColumn(String label, String value) {
     return Column(
       children: [
-        Text(
-          label,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black54,
-          ),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.black54)),
         const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
       ],
     );
   }
@@ -399,10 +341,13 @@ class CropCard extends StatelessWidget {
 class CropBarChart extends StatelessWidget {
   final List<CropData> cropDataList;
 
-  const CropBarChart({Key? key, required this.cropDataList}) : super(key: key);
+  const CropBarChart({super.key, required this.cropDataList});
 
   @override
   Widget build(BuildContext context) {
+    if (cropDataList.isEmpty) {
+    return const Center(child: Text('No data to display'));
+  }
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
@@ -410,15 +355,11 @@ class CropBarChart extends StatelessWidget {
         barTouchData: BarTouchData(
           enabled: true,
           touchTooltipData: BarTouchTooltipData(
-            //tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
               String value = rod.toY.toStringAsFixed(1);
               String cropName = cropDataList[group.x.toInt()].cropEng;
               String metric = rodIndex == 0 ? 'Min' : rodIndex == 1 ? 'Max' : 'Avg';
-              return BarTooltipItem(
-                '$cropName\n$metric: $value',
-                const TextStyle(color: Colors.white),
-              );
+              return BarTooltipItem('$cropName\n$metric: $value', const TextStyle(color: Colors.white));
             },
           ),
         ),
@@ -433,11 +374,7 @@ class CropBarChart extends StatelessWidget {
                     padding: const EdgeInsets.only(top: 8.0),
                     child: Text(
                       cropDataList[value.toInt()].cropEng.substring(0, min(3, cropDataList[value.toInt()].cropEng.length)),
-                      style: const TextStyle(
-                        color: Colors.black54,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 10,
-                      ),
+                      style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 10),
                     ),
                   );
                 }
@@ -451,14 +388,7 @@ class CropBarChart extends StatelessWidget {
               reservedSize: 30,
               getTitlesWidget: (value, meta) {
                 if (value % 10 == 0 && value > 0) {
-                  return Text(
-                    value.toInt().toString(),
-                    style: const TextStyle(
-                      color: Colors.black54,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 10,
-                    ),
-                  );
+                  return Text(value.toInt().toString(), style: const TextStyle(color: Colors.black54, fontWeight: FontWeight.bold, fontSize: 10));
                 }
                 return const Text('');
               },
@@ -470,12 +400,7 @@ class CropBarChart extends StatelessWidget {
         gridData: FlGridData(
           show: true,
           horizontalInterval: 10,
-          getDrawingHorizontalLine: (value) {
-            return FlLine(
-              color: Colors.grey.withOpacity(0.2),
-              strokeWidth: 1,
-            );
-          },
+          getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withOpacity(0.2), strokeWidth: 1),
         ),
         borderData: FlBorderData(show: false),
         barGroups: _getBarGroups(),
@@ -493,44 +418,13 @@ class CropBarChart extends StatelessWidget {
 
   List<BarChartGroupData> _getBarGroups() {
     List<BarChartGroupData> barGroups = [];
-    
     for (int i = 0; i < cropDataList.length; i++) {
-      barGroups.add(
-        BarChartGroupData(
-          x: i,
-          barRods: [
-            BarChartRodData(
-              toY: cropDataList[i].min.toDouble(),
-              color: Colors.blue.shade300,
-              width: 8,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
-              ),
-            ),
-            BarChartRodData(
-              toY: cropDataList[i].max.toDouble(),
-              color: Colors.red.shade300,
-              width: 8,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
-              ),
-            ),
-            BarChartRodData(
-              toY: cropDataList[i].average.toDouble(),
-              color: Colors.green.shade300,
-              width: 8,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(4),
-                topRight: Radius.circular(4),
-              ),
-            ),
-          ],
-        ),
-      );
+      barGroups.add(BarChartGroupData(x: i, barRods: [
+        BarChartRodData(toY: cropDataList[i].min.toDouble(), color: Colors.blue.shade300, width: 8, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+        BarChartRodData(toY: cropDataList[i].max.toDouble(), color: Colors.red.shade300, width: 8, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+        BarChartRodData(toY: cropDataList[i].average.toDouble(), color: Colors.green.shade300, width: 8, borderRadius: const BorderRadius.only(topLeft: Radius.circular(4), topRight: Radius.circular(4))),
+      ]));
     }
-    
     return barGroups;
   }
 }
@@ -551,17 +445,16 @@ class CropData {
   });
 
   factory CropData.fromJson(Map<String, dynamic> json) {
-    return CropData(
-      crop: json['crop'],
-      cropEng: json['crop-eng'],
-      min: json['min'].toDouble(),
-      max: json['max'].toDouble(),
-      average: json['average'].toDouble(),
-    );
-  }
+  return CropData(
+    crop: json['cropName'] ?? 'Unknown',
+    cropEng: json['cropName'] ?? 'Unknown', // Or provide English name separately if available
+    min: (json['Minprice'] ?? 0).toDouble(),
+    max: (json['Maxprice'] ?? 0).toDouble(),
+    average: (json['Avgprice'] ?? 0).toDouble(),
+  );
 }
 
-// Helper function to get minimum of two numbers
-int min(int a, int b) {
-  return a < b ? a : b;
 }
+
+
+int min(int a, int b) => a < b ? a : b;

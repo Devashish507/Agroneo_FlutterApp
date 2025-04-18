@@ -1,3 +1,6 @@
+// ignore_for_file: unused_import
+
+import 'package:agri/pages/Marketpalce.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -5,6 +8,7 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 
 import 'firebase_options.dart';
+
 import 'Home.dart';
 import 'pages/splash.dart';
 import 'util/restart.dart';
@@ -21,16 +25,17 @@ void main() async {
   print('✅ Firebase initialized');
 
   await FirebaseAppCheck.instance.activate(
-    androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.appAttest,
-  );
-  print('✅ App Check activated');
+  androidProvider: AndroidProvider.debug,
+  appleProvider: AppleProvider.debug,
+);
 
-  await AndroidAlarmManager.initialize();
-  print('✅ Alarm Manager initialized');
+  // print('✅ App Check activated');
+
+  // await AndroidAlarmManager.initialize();
+  // print('✅ Alarm Manager initialized');
 
   // 🟡 Temporarily comment to check app load
-  _scheduleDailyMessageTask();
+  // _scheduleDailyMessageTask();
 
   try {
     runApp(RestartWidget(child: MyApp()));
@@ -41,23 +46,23 @@ void main() async {
   }
 }
 
-void _scheduleDailyMessageTask() {
-  final now = DateTime.now();
-  final firstRunTime = DateTime(now.year, now.month, now.day, 9, 0);
-  final runTime = firstRunTime.isBefore(now)
-      ? firstRunTime.add(Duration(days: 1))
-      : firstRunTime;
+// void _scheduleDailyMessageTask() {
+//   final now = DateTime.now();
+//   final firstRunTime = DateTime(now.year, now.month, now.day, 9, 0);
+//   final runTime = firstRunTime.isBefore(now)
+//       ? firstRunTime.add(Duration(days: 1))
+//       : firstRunTime;
 
-  AndroidAlarmManager.periodic(
-    const Duration(hours: 24),
-    1,
-    sendWhatsAppToAllUsers,
-    startAt: runTime,
-    exact: true,
-    wakeup: true,
-    rescheduleOnReboot: true,
-  );
-}
+//   AndroidAlarmManager.periodic(
+//     const Duration(hours: 24),
+//     1,
+//     sendWhatsAppToAllUsers,
+//     startAt: runTime,
+//     exact: true,
+//     wakeup: true,
+//     rescheduleOnReboot: true,
+//   );
+// }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

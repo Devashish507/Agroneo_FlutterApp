@@ -94,7 +94,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushReplacementNamed(context, '/profile2');
+                          Navigator.pushNamed(context, '/profile2');
                         },
                         child: CircleAvatar(
                           radius: 24,
