@@ -32,7 +32,7 @@
 
 ## 🎯 Target Audience
 
-Farmers with limited digital literacy looking for simple and effective tools to manage crops, get government updates, and receive AI-powered guidance in their native language.
+Farmers with limited digital literacy looking for simple and effective tools to manage crops, get government updates, and receive AI-powered guidance in their native language.x
 
 ---
 
